@@ -47,62 +47,72 @@
 
 
 
-<script type="text/javascript">
-    $(document).ready(function () {
 
-    });
-    $("#txtFile").change(function (event) {
-        var files = event.target.files;
-        $("#imgViewer").attr("src", window.URL.createObjectURL(files[0]));
-    });
-    $("#btnSave").click(function() {
-        var files = $("#txtFile").prop("files");
-        var formData = new FormData();
-        for (var i = 0; i < files.length; i++) {
-            formData.append("file", files[i]);
+
+
+@section scrripts
+{
+
+    <script type="text/javascript">
+        $(document).ready(function () {
+
+        });
+        $("#txtFile").change(function (event) {
+            var files = event.target.files;
+            $("#imgViewer").attr("src", window.URL.createObjectURL(files[0]));
+        });
+        $("#btnSave").click(function () {
+            var files = $("#txtFile").prop("files");
+            var formData = new FormData();
+            for (var i = 0; i < files.length; i++) {
+                formData.append("file", files[i]);
+            }
+
+            var oStudent = {
+                Name: $("#txtName").val(),
+                Roll: $("#txtRoll").val()
+            };
+            formData.append("Student", JSON.stringify(oStudent));
+
+            $.ajax({
+                type: "POST",
+                url: "/Home/SaveFile",
+                data: formData,
+                processData: false,
+                contentType: false,
+                success: function (data) {
+                    ResetFields();
+                    alert(data);
+                },
+                error: function (data) {
+                    console.log('Error:', data);
+                }
+            });
+        });
+        $("#btnRead").click(function () {
+            $.ajax({
+                type: "GET",
+                url: "/Home/GetSavedStudent",
+
+                success: function (data) {
+                    $("#txtName").val(data.Name);
+                    $("#txtRoll").val(data.Roll);
+                    $("#imgViewer").attr("src", "data:image/jpg;base64," + data.Photo + "");
+                },
+                error: function (data) {
+                    console.log('Error:', data);
+                }
+            });
+        });
+        function ResetFields() {
+            $("#txtName, #txtRoll").val("");
+            $("#imgViewer").attr("src", "");
         }
+    </script>
 
-        var oStudent = {
-            Name: $("#txtName").val(),
-            Roll: $("#txtRoll").val()
-        };
-        formData.append("Student", JSON.stringify(oStudent));
+}
 
-        $.ajax({
-            type: "POST",
-            url : "/Home/SaveFile",
-            data: formData,
-            processData: false,
-            contentType: false,
-            success: function (data) {
-                ResetFields();
-                alert(data);
-            },
-            error: function (data) {
-                console.log('Error:', data);
-            }
-        });
-    });
-    $("#btnRead").click(function () {
-        $.ajax({
-            type: "GET",
-            url: "/Home/GetSavedStudent",
-            
-            success: function (data) {
-                $("#txtName").val(data.Name);
-                $("#txtRoll").val(data.Roll);
-                $("#imgViewer").attr("src", "data:image/jpg;base64," + data.Photo + "");
-            },
-            error: function (data) {
-                console.log('Error:', data);
-            }
-        });
-    });
-    function ResetFields(){
-        $("#txtName, #txtRoll").val("");
-        $("#imgViewer").attr("src", "");
-    }
-</script>
+
 
 
 
